@@ -9,13 +9,29 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        VStack(spacing: 0){
+            VStack{
+                Text("Tapped Count")
+                    .font(.title)
+                    
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.red)
+            
+            VStack{
+                
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.blue)
+            
+            VStack{
+                Text("Timer")
+                    .font(.title)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.yellow)
         }
-        .padding()
+        .ignoresSafeArea()
     }
 }
 
