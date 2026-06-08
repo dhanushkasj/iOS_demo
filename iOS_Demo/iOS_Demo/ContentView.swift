@@ -11,25 +11,45 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 0){
             VStack{
-                Text("Tapped Count")
-                    .font(.title)
+                Text("SCORE")
+                    .font(.headline)
                     
+                Text("0")
+                    .font(.largeTitle.bold())
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.red)
+            
+            Spacer()
             
             VStack{
-                
+                Button{
+                    print("Tapped")
+                } label: {
+                    ZStack{
+                        Circle()
+                            .stroke(lineWidth: 8)
+                        
+                        Circle()
+                            .fill(Color.blue)
+                            .padding(10)
+                        
+                        Text("Tap To Start")
+                            .foregroundStyle(.white)
+                            .font(.largeTitle.bold())
+                    }
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.blue)
+            
+            Spacer()
             
             VStack{
-                Text("Timer")
-                    .font(.title)
+                Text("TIME REMAINING")
+                    .font(.headline)
+                Text("00.00")
+                    .font(.largeTitle)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.yellow)
         }
         .ignoresSafeArea()
     }
