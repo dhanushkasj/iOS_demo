@@ -1,9 +1,6 @@
 //
 //  HomeView.swift
 //  iOS_Demo
-//
-//  Landing page that lets the player pick one of two games.
-//
 
 import SwiftUI
 
@@ -35,13 +32,13 @@ struct HomeView: View {
                 }
 
                 NavigationLink {
-                    ReactionGameView()
+                    LightItUpView()
                 } label: {
                     GameCard(
-                        title: "Reaction Time",
-                        subtitle: "Tap the moment it turns green",
-                        systemImage: "bolt.fill",
-                        color: .green
+                        title: "Light It Up",
+                        subtitle: "Tap the glowing card before it fades",
+                        systemImage: "square.grid.3x3.fill",
+                        color: .orange
                     )
                 }
 

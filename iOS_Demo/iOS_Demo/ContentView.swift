@@ -8,8 +8,8 @@
 import SwiftUI
 
 enum TapMode: Equatable {
-    case bonus    // green  → taps score double
-    case penalty  // grey   → taps subtract points
+    case bonus
+    case penalty
 
     var color: Color {
         switch self {
@@ -30,7 +30,6 @@ final class GameModel {
     
     var buttonPosition = CGPoint(x: 0.5, y: 0.5)
 
-    // Fraction of time remaining: 1 at the start, 0 when the clock runs out.
     var progress: Double { max(0, min(1, countDown / duration)) }
 
     private let duration: Double = 10
@@ -49,23 +48,18 @@ final class GameModel {
         }
         guard let startedAt else { return }
 
-        // Which fixed 0.5s window (from game start) does this tap fall in?
         let window = Int(Date().timeIntervalSince(startedAt) / windowLength)
         if window == currentWindow {
-            // Another tap in the same window → combo grows.
             multiplier += 1
         } else {
-            // First tap of a new window → reset to ×1.
             multiplier = 1
             currentWindow = window
         }
 
         switch mode {
         case .bonus:
-            // Green → reward: double the combo value.
             tappedCount += multiplier * 2
         case .penalty:
-            // Grey → punish tapping: lose the combo value (never below 0).
             tappedCount = max(0, tappedCount - multiplier)
         }
     }
@@ -92,30 +86,26 @@ final class GameModel {
                 if remaining <= 0 { break }
                 countDown = remaining
 
-                // Flip the button colour every few seconds (bonus ⇄ penalty).
                 if let next = nextSwitchAt, now >= next {
                     mode = (mode == .bonus) ? .penalty : .bonus
                     nextSwitchAt = now.addingTimeInterval(Double.random(in: switchInterval))
                 }
 
-                // Jump the button to a random spot every 2 seconds.
                 if let next = nextMoveAt, now >= next {
                     buttonPosition = CGPoint(x: Double.random(in: 0...1),
                                              y: Double.random(in: 0...1))
                     nextMoveAt = now.addingTimeInterval(moveInterval)
                 }
 
-                // Each new 0.5s window resets the multiplier, even while tapping.
                 let window = Int(now.timeIntervalSince(begin) / windowLength)
                 if window != currentWindow {
                     multiplier = 1
                 }
 
-                // ~60fps UI refresh; the wall clock above is authoritative.
                 do {
                     try await Task.sleep(for: .milliseconds(16))
                 } catch {
-                    return // cancelled
+                    return
                 }
             }
 
@@ -143,6 +133,8 @@ final class GameModel {
 
 struct TapGameView: View {
     @State private var game = GameModel()
+    @AppStorage("highScore.tapFrenzy") private var highScore = 0
+    @State private var isNewBest = false
 
     var body: some View {
         VStack(spacing: 0){
@@ -152,13 +144,16 @@ struct TapGameView: View {
 
                 Text("\(game.tappedCount)")
                     .font(.largeTitle.bold())
+
+                Text("Best \(highScore)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             Spacer()
 
             GeometryReader { geo in
-                // Big at start-up, shrinking to tiny as the timer runs out.
                 let maxSize: CGFloat = 240
                 let minSize: CGFloat = 50
                 let size = minSize + (maxSize - minSize) * CGFloat(game.progress)
@@ -183,8 +178,6 @@ struct TapGameView: View {
                         .padding(8)
                 }
                 .frame(width: size, height: size)
-                // Map the normalised position to a centre that keeps the
-                // whole button inside the play area.
                 .position(
                     x: size / 2 + game.buttonPosition.x * (geo.size.width - size),
                     y: size / 2 + game.buttonPosition.y * (geo.size.height - size)
@@ -205,66 +198,22 @@ struct TapGameView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea()
-        // Buzz when the timer runs out (only on the transition to "results").
         .sensoryFeedback(trigger: game.showResults) { _, isShowing in
             isShowing ? .warning : nil
         }
+        .onChange(of: game.showResults) { _, isShowing in
+            guard isShowing else { return }
+            isNewBest = game.tappedCount > highScore
+            if isNewBest { highScore = game.tappedCount }
+        }
         .fullScreenCover(isPresented: $game.showResults) {
-            ResultsView(score: game.tappedCount) {
+            GameResultsView(score: game.tappedCount, best: highScore, isNewBest: isNewBest) {
                 game.reset()
             }
         }
     }
 }
 
-struct ResultsView: View {
-    let score: Int
-    let onPlayAgain: () -> Void
-
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
-
-            Text("Time's Up!")
-                .font(.largeTitle.bold())
-
-            VStack(spacing: 8) {
-                Text("YOUR SCORE")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                Text("\(score)")
-                    .font(.system(size: 80, weight: .bold))
-                    .foregroundStyle(.blue)
-            }
-
-            Text("You tapped \(score) \(score == 1 ? "time" : "times")!")
-                .foregroundStyle(.secondary)
-
-            Spacer()
-
-            Button {
-                dismiss()
-                onPlayAgain()
-            } label: {
-                Text("Play Again")
-                    .font(.title2.bold())
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(.blue, in: RoundedRectangle(cornerRadius: 16))
-            }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 40)
-        }
-    }
-}
-
 #Preview {
     TapGameView()
-}
-
-#Preview("Results") {
-    ResultsView(score: 42) {}
 }
