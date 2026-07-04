@@ -2,9 +2,7 @@
 //  QuizRushViewModel.swift
 //  iOS_Demo
 //
-//  All Quiz Rush game logic lives here — deliberately separate from the
-//  view. An ObservableObject drives a loading/loaded/failed view state and
-//  tracks the current question, score and streak.
+//  Created by Dhanushka Jayakody on 2026-07-04.
 //
 
 import Foundation
@@ -13,7 +11,6 @@ import Combine
 @MainActor
 final class QuizRushViewModel: ObservableObject {
 
-    /// What the view should render right now.
     enum ViewState {
         case loading
         case loaded
@@ -27,7 +24,6 @@ final class QuizRushViewModel: ObservableObject {
     @Published private(set) var streak = 0
     @Published private(set) var bestStreak = 0
 
-    /// After an answer is tapped we reveal the correct one before advancing.
     @Published private(set) var selectedAnswer: String?
     @Published private(set) var isShowingAnswer = false
 
@@ -37,19 +33,14 @@ final class QuizRushViewModel: ObservableObject {
     private let service = TriviaService()
     private let basePoints = 10
     private let wrongPenalty = 5
-    private let streakBonus = 2   // extra points per consecutive correct answer
+    private let streakBonus = 2
 
     var currentItem: QuizItem? {
         items.indices.contains(index) ? items[index] : nil
     }
 
-    /// 1-based position for the "3 of 10" label.
     var questionNumber: Int { min(index + 1, totalQuestions) }
 
-    // MARK: - Loading
-
-    /// Fetches a fresh round and resets all progress. Called from `.task`
-    /// on appear and again on Play Again.
     func load() async {
         state = .loading
         showResults = false
@@ -66,8 +57,6 @@ final class QuizRushViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Answering
-
     func select(_ answer: String) {
         guard !isShowingAnswer, let item = currentItem else { return }
 
@@ -77,14 +66,12 @@ final class QuizRushViewModel: ObservableObject {
         if answer == item.correctAnswer {
             streak += 1
             bestStreak = max(bestStreak, streak)
-            // Base points plus a growing bonus for consecutive correct answers.
             score += basePoints + max(0, streak - 1) * streakBonus
         } else {
             streak = 0
-            score = max(0, score - wrongPenalty)   // small penalty, still advances
+            score = max(0, score - wrongPenalty)
         }
 
-        // Reveal the outcome briefly, then move on automatically.
         Task {
             try? await Task.sleep(for: .seconds(1.1))
             advance()
@@ -106,8 +93,6 @@ final class QuizRushViewModel: ObservableObject {
     func dismissResults() {
         showResults = false
     }
-
-    // MARK: - Helpers
 
     private func resetProgress() {
         items = []

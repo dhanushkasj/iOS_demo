@@ -2,10 +2,7 @@
 //  QuizRushView.swift
 //  iOS_Demo
 //
-//  The Quiz Rush screen. It only renders state from the view model and
-//  forwards taps — no game logic lives here. Switches on the view-state
-//  enum: ProgressView while loading, an error + Retry on failure, and the
-//  question with four answer buttons once loaded.
+//  Created by Dhanushka Jayakody on 2026-07-04.
 //
 
 import SwiftUI
@@ -60,8 +57,6 @@ struct QuizRushView: View {
         }
     }
 
-    // MARK: - Loading
-
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
@@ -72,8 +67,6 @@ struct QuizRushView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-
-    // MARK: - Error
 
     private func errorView(_ message: String) -> some View {
         VStack(spacing: 16) {
@@ -101,8 +94,6 @@ struct QuizRushView: View {
         .padding(32)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-
-    // MARK: - Loaded
 
     private var quizView: some View {
         VStack(spacing: 20) {
@@ -201,16 +192,13 @@ struct QuizRushView: View {
         }
         .buttonStyle(.plain)
         .disabled(reveal)
-        // Green flash: the correct answer gives a little pop.
         .scaleEffect(reveal && isCorrect ? 1.04 : 1)
-        // Red shake: a wrong pick jitters horizontally.
         .modifier(Shake(animatableData: isWrongPick ? 1 : 0))
         .animation(.easeInOut(duration: 0.2), value: reveal)
         .animation(.linear(duration: 0.4), value: isWrongPick)
     }
 }
 
-/// Horizontal shake used to signal a wrong answer.
 private struct Shake: GeometryEffect {
     var animatableData: CGFloat
     var amount: CGFloat = 8

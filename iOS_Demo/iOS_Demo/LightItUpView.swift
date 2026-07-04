@@ -23,10 +23,10 @@ enum Level: Int, CaseIterable {
 
     var cardCount: Int {
         switch self {
-        case .l1: return 3   // single row
-        case .l2: return 4   // 2 × 2
-        case .l3: return 6   // 2 × 3
-        case .l4: return 9   // 3 × 3
+        case .l1: return 3
+        case .l2: return 4
+        case .l3: return 6
+        case .l4: return 9
         }
     }
 
@@ -189,6 +189,7 @@ struct LightItUpView: View {
     @State private var game = LightItUpModel()
     @AppStorage("highScore.lightItUp") private var highScore = 0
     @State private var isNewBest = false
+    @State private var tapTick = 0
 
     var body: some View {
         VStack(spacing: 24) {
@@ -210,6 +211,7 @@ struct LightItUpView: View {
                          label: game.level.label)
         }
         .onDisappear { game.stop() }
+        .sensoryFeedback(.impact, trigger: tapTick)
         .sensoryFeedback(trigger: game.showResults) { _, isShowing in
             isShowing ? .warning : nil
         }
@@ -267,6 +269,7 @@ struct LightItUpView: View {
             ForEach(game.cards) { card in
                 CardTile(card: card, color: game.level.color) {
                     game.tap(card)
+                    tapTick += 1
                 }
             }
         }

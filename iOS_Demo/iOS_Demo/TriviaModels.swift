@@ -2,13 +2,11 @@
 //  TriviaModels.swift
 //  iOS_Demo
 //
-//  Codable models matching the Open Trivia DB response, plus a
-//  view-friendly QuizItem with decoded text and pre-shuffled answers.
+//  Created by Dhanushka Jayakody on 2026-07-04.
 //
 
 import Foundation
 
-/// Outer wrapper returned by https://opentdb.com/api.php
 struct TriviaResponse: Codable {
     let responseCode: Int
     let results: [TriviaQuestion]
@@ -19,7 +17,6 @@ struct TriviaResponse: Codable {
     }
 }
 
-/// A single question exactly as the API sends it (HTML-encoded).
 struct TriviaQuestion: Codable {
     let category: String
     let difficulty: String
@@ -34,9 +31,6 @@ struct TriviaQuestion: Codable {
     }
 }
 
-/// Presentation model the quiz view renders. Text is HTML-decoded and the
-/// four answers are combined + shuffled once, so buttons don't reorder on
-/// every redraw.
 struct QuizItem: Identifiable {
     let id = UUID()
     let question: String
@@ -53,9 +47,6 @@ struct QuizItem: Identifiable {
 }
 
 extension String {
-    /// Decodes the HTML entities Open Trivia DB returns — named (`&quot;`,
-    /// `&eacute;`) and numeric (`&#039;`, `&#x27;`) — without pulling in the
-    /// main-thread-only NSAttributedString HTML importer.
     var htmlDecoded: String {
         guard contains("&") else { return self }
 

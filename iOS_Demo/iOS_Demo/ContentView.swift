@@ -135,6 +135,7 @@ struct TapGameView: View {
     @State private var game = GameModel()
     @AppStorage("highScore.tapFrenzy") private var highScore = 0
     @State private var isNewBest = false
+    @State private var tapTick = 0
 
     var body: some View {
         VStack(spacing: 0){
@@ -164,6 +165,7 @@ struct TapGameView: View {
 
                     Button{
                         game.tap()
+                        tapTick += 1
                     } label: {
                         Circle()
                             .fill(game.isRunning ? game.mode.color : .blue)
@@ -198,6 +200,7 @@ struct TapGameView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea()
+        .sensoryFeedback(.impact, trigger: tapTick)
         .sensoryFeedback(trigger: game.showResults) { _, isShowing in
             isShowing ? .warning : nil
         }

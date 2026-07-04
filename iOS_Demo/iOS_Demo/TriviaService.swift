@@ -2,13 +2,11 @@
 //  TriviaService.swift
 //  iOS_Demo
 //
-//  Networking layer: one async function that fetches and decodes
-//  questions from Open Trivia DB. The endpoint lives in one place.
+//  Created by Dhanushka Jayakody on 2026-07-04.
 //
 
 import Foundation
 
-/// User-facing failures the quiz can recover from with a Retry.
 enum TriviaError: LocalizedError {
     case badURL
     case requestFailed
@@ -28,7 +26,6 @@ enum TriviaError: LocalizedError {
 struct TriviaService {
     private let endpoint = "https://opentdb.com/api.php?amount=10&type=multiple"
 
-    /// Fetches 10 multiple-choice questions using async/await + URLSession.
     func fetchQuestions() async throws -> [TriviaQuestion] {
         guard let url = URL(string: endpoint) else { throw TriviaError.badURL }
 
@@ -52,7 +49,6 @@ struct TriviaService {
             throw TriviaError.decodingFailed
         }
 
-        // Open Trivia DB uses response_code 0 for success.
         guard decoded.responseCode == 0, !decoded.results.isEmpty else {
             throw TriviaError.emptyResults
         }
