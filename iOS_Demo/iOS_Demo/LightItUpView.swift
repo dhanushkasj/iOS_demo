@@ -344,6 +344,7 @@ private struct LevelUpFlash: View {
 }
 
 struct GameResultsView: View {
+    var title: String = "Time's Up!"
     let score: Int
     let best: Int
     let isNewBest: Bool
@@ -355,7 +356,7 @@ struct GameResultsView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Text("Time's Up!")
+            Text(title)
                 .font(.largeTitle.bold())
 
             VStack(spacing: 8) {

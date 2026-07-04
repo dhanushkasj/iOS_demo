@@ -42,6 +42,17 @@ struct HomeView: View {
                     )
                 }
 
+                NavigationLink {
+                    QuizRushView()
+                } label: {
+                    GameCard(
+                        title: "Quiz Rush",
+                        subtitle: "Answer live trivia, build your streak",
+                        systemImage: "brain.head.profile",
+                        color: .purple
+                    )
+                }
+
                 Spacer()
                 Spacer()
             }
