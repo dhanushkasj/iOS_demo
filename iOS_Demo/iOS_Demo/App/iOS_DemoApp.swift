@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct iOS_DemoApp: App {
+    @State private var sessionStore = SessionStore(context: PersistenceController.shared.viewContext)
+
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            RootTabView()
+                .environment(sessionStore)
         }
     }
 }

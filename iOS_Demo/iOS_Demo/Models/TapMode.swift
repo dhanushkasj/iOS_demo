@@ -17,4 +17,18 @@ enum TapMode: Equatable {
         case .penalty: return .gray
         }
     }
+
+    var label: String {
+        switch self {
+        case .bonus:   return "BONUS"
+        case .penalty: return "PENALTY"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .bonus:   return "bolt.fill"
+        case .penalty: return "exclamationmark.triangle.fill"
+        }
+    }
 }

@@ -32,7 +32,7 @@ final class TapFrenzyViewModel {
 
     func tap() {
         if !isRunning {
-            start()
+            begin()
         }
         guard let startedAt else { return }
 
@@ -52,7 +52,7 @@ final class TapFrenzyViewModel {
         }
     }
 
-    private func start() {
+    func begin() {
         isRunning = true
         countDown = duration
         multiplier = 1
