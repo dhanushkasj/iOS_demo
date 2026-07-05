@@ -11,6 +11,7 @@ struct QuizRushView: View {
     @StateObject private var viewModel = QuizRushViewModel()
     @AppStorage("highScore.quizRush") private var highScore = 0
     @State private var isNewBest = false
+    @Environment(\.dismiss) private var dismiss
 
     private let accent: Color = .purple
 
@@ -41,6 +42,8 @@ struct QuizRushView: View {
                                 best: highScore,
                                 isNewBest: isNewBest) {
                     Task { await viewModel.load() }
+                } onHome: {
+                    dismiss()
                 }
             }
     }
