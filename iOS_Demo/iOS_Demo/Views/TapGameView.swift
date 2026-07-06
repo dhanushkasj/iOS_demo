@@ -16,6 +16,9 @@ struct TapGameView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
     @Environment(LocationService.self) private var location
+    @Environment(AudioService.self) private var audio
+    @AppStorage("settings.musicEnabled") private var musicEnabled = true
+    @AppStorage("settings.hapticsEnabled") private var hapticsEnabled = true
 
     private var accent: Color { game.isRunning ? game.mode.color : .blue }
 
@@ -39,9 +42,13 @@ struct TapGameView: View {
                 startOverlay
             }
         }
-        .sensoryFeedback(.impact, trigger: tapTick)
+        .onAppear { if musicEnabled { audio.play() } }
+        .onDisappear { audio.stop() }
+        .sensoryFeedback(trigger: tapTick) { _, _ in
+            hapticsEnabled ? .impact : nil
+        }
         .sensoryFeedback(trigger: game.showResults) { _, isShowing in
-            isShowing ? .warning : nil
+            hapticsEnabled && isShowing ? .warning : nil
         }
         .onChange(of: game.showResults) { _, isShowing in
             guard isShowing else { return }
@@ -230,4 +237,5 @@ struct TapGameView: View {
     }
     .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
     .environment(LocationService())
+    .environment(AudioService())
 }

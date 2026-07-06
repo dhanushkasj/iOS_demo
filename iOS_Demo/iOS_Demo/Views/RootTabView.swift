@@ -26,4 +26,7 @@ struct RootTabView: View {
 #Preview {
     RootTabView()
         .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
+        .environment(LocationService())
+        .environment(NotificationService())
+        .environment(AudioService())
 }

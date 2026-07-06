@@ -10,6 +10,7 @@ import SwiftUI
 struct QuizRushView: View {
     @StateObject private var viewModel = QuizRushViewModel()
     @AppStorage("highScore.quizRush") private var highScore = 0
+    @AppStorage("settings.hapticsEnabled") private var hapticsEnabled = true
     @State private var isNewBest = false
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
@@ -25,7 +26,7 @@ struct QuizRushView: View {
                 if viewModel.items.isEmpty { await viewModel.load() }
             }
             .sensoryFeedback(trigger: viewModel.isShowingAnswer) { _, showing in
-                guard showing,
+                guard hapticsEnabled, showing,
                       let item = viewModel.currentItem,
                       let selected = viewModel.selectedAnswer else { return nil }
                 return selected == item.correctAnswer ? .success : .error

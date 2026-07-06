@@ -57,4 +57,5 @@ struct HomeTab: View {
     HomeTab()
         .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
         .environment(LocationService())
+        .environment(AudioService())
 }

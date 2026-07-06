@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		91D261A72FFBE66C0009176D /* background_music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 91D261A62FFBE66C0009176D /* background_music.mp3 */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		917C99B32FD41A86007C9C6A /* iOS_Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS_Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		91D261A62FFBE66C0009176D /* background_music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = background_music.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -34,6 +39,7 @@
 			children = (
 				917C99B52FD41A86007C9C6A /* iOS_Demo */,
 				917C99B42FD41A86007C9C6A /* Products */,
+				91D261A62FFBE66C0009176D /* background_music.mp3 */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91D261A72FFBE66C0009176D /* background_music.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

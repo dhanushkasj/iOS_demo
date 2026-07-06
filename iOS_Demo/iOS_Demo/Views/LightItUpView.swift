@@ -13,6 +13,9 @@ struct LightItUpView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
     @Environment(LocationService.self) private var location
+    @Environment(AudioService.self) private var audio
+    @AppStorage("settings.musicEnabled") private var musicEnabled = true
+    @AppStorage("settings.hapticsEnabled") private var hapticsEnabled = true
 
     var body: some View {
         VStack(spacing: 24) {
@@ -33,10 +36,16 @@ struct LightItUpView: View {
                          color: game.level.color,
                          label: game.level.label)
         }
-        .onDisappear { game.stop() }
-        .sensoryFeedback(.impact, trigger: tapTick)
+        .onAppear { if musicEnabled { audio.play() } }
+        .onDisappear {
+            game.stop()
+            audio.stop()
+        }
+        .sensoryFeedback(trigger: tapTick) { _, _ in
+            hapticsEnabled ? .impact : nil
+        }
         .sensoryFeedback(trigger: game.showResults) { _, isShowing in
-            isShowing ? .warning : nil
+            hapticsEnabled && isShowing ? .warning : nil
         }
         .onChange(of: game.showResults) { _, isShowing in
             guard isShowing else { return }
@@ -179,4 +188,5 @@ private struct LevelUpFlash: View {
     }
     .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
     .environment(LocationService())
+    .environment(AudioService())
 }

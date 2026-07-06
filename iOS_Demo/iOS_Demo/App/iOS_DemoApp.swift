@@ -11,12 +11,16 @@ import SwiftUI
 struct iOS_DemoApp: App {
     @State private var sessionStore = SessionStore(context: PersistenceController.shared.viewContext)
     @State private var locationService = LocationService()
+    @State private var notificationService = NotificationService()
+    @State private var audioService = AudioService()
 
     var body: some Scene {
         WindowGroup {
             RootTabView()
                 .environment(sessionStore)
                 .environment(locationService)
+                .environment(notificationService)
+                .environment(audioService)
                 .task {
                     locationService.requestPermission()
                 }
