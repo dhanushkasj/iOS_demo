@@ -12,6 +12,7 @@ struct LightItUpView: View {
     @State private var tapTick = 0
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
+    @Environment(LocationService.self) private var location
 
     var body: some View {
         VStack(spacing: 24) {
@@ -41,7 +42,7 @@ struct LightItUpView: View {
             guard isShowing else { return }
             isNewBest = game.score > highScore
             if isNewBest { highScore = game.score }
-            sessions.record(mode: .lightItUp, score: game.score, coordinate: nil)
+            sessions.record(mode: .lightItUp, score: game.score, coordinate: location.lastCoordinate)
         }
         .fullScreenCover(isPresented: $game.showResults) {
             GameResultsView(score: game.score, best: highScore, isNewBest: isNewBest) {
@@ -177,4 +178,5 @@ private struct LevelUpFlash: View {
         LightItUpView()
     }
     .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
+    .environment(LocationService())
 }

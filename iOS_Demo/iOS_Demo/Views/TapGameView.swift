@@ -15,6 +15,7 @@ struct TapGameView: View {
     @State private var bump = false
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
+    @Environment(LocationService.self) private var location
 
     private var accent: Color { game.isRunning ? game.mode.color : .blue }
 
@@ -46,7 +47,7 @@ struct TapGameView: View {
             guard isShowing else { return }
             isNewBest = game.tappedCount > highScore
             if isNewBest { highScore = game.tappedCount }
-            sessions.record(mode: .tapFrenzy, score: game.tappedCount, coordinate: nil)
+            sessions.record(mode: .tapFrenzy, score: game.tappedCount, coordinate: location.lastCoordinate)
         }
         .fullScreenCover(isPresented: $game.showResults) {
             GameResultsView(score: game.tappedCount, best: highScore, isNewBest: isNewBest) {
@@ -228,4 +229,5 @@ struct TapGameView: View {
         TapGameView()
     }
     .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
+    .environment(LocationService())
 }

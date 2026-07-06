@@ -13,6 +13,7 @@ struct QuizRushView: View {
     @State private var isNewBest = false
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
+    @Environment(LocationService.self) private var location
 
     private let accent: Color = .purple
 
@@ -33,7 +34,7 @@ struct QuizRushView: View {
                 guard showing else { return }
                 isNewBest = viewModel.score > highScore
                 if isNewBest { highScore = viewModel.score }
-                sessions.record(mode: .quizRush, score: viewModel.score, coordinate: nil)
+                sessions.record(mode: .quizRush, score: viewModel.score, coordinate: location.lastCoordinate)
             }
             .fullScreenCover(isPresented: Binding(
                 get: { viewModel.showResults },
@@ -222,4 +223,5 @@ private struct Shake: GeometryEffect {
         QuizRushView()
     }
     .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
+    .environment(LocationService())
 }
