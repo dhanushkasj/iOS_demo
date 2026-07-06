@@ -55,4 +55,5 @@ struct HomeTab: View {
 
 #Preview {
     HomeTab()
+        .environment(SessionStore(context: PersistenceController(inMemory: true).viewContext))
 }
