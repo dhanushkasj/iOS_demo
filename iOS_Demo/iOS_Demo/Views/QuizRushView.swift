@@ -42,9 +42,11 @@ struct QuizRushView: View {
                 set: { if !$0 { viewModel.dismissResults() } }
             )) {
                 GameResultsView(title: "Round Complete!",
+                                mode: .quizRush,
                                 score: viewModel.score,
                                 best: highScore,
-                                isNewBest: isNewBest) {
+                                isNewBest: isNewBest,
+                                shareMessage: "I just scored \(viewModel.score) on Quiz Rush — beat that") {
                     Task { await viewModel.load() }
                 } onHome: {
                     dismiss()

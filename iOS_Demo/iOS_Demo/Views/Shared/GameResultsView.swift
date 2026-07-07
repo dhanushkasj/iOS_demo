@@ -9,73 +9,134 @@ import SwiftUI
 
 struct GameResultsView: View {
     var title: String = "Time's Up!"
+    let mode: GameMode
     let score: Int
     let best: Int
     let isNewBest: Bool
+    var shareMessage: String = ""
     let onPlayAgain: () -> Void
     let onHome: () -> Void
 
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 22) {
             Spacer()
+
+            gameBadge
 
             Text(title)
                 .font(.largeTitle.bold())
 
-            VStack(spacing: 8) {
-                Text("YOUR SCORE")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                Text("\(score)")
-                    .font(.system(size: 80, weight: .bold))
-                    .foregroundStyle(.blue)
-            }
+            scoreCard
 
-            if isNewBest {
-                Label("New best!", systemImage: "trophy.fill")
-                    .font(.title3.bold())
-                    .foregroundStyle(.yellow)
-            } else {
-                Text("Best: \(best)")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-            }
+            bestLabel
 
             Spacer()
 
-            VStack(spacing: 12) {
-                Button {
-                    dismiss()
-                    onPlayAgain()
-                } label: {
-                    Text("Try Again")
-                        .font(.title2.bold())
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(.blue, in: RoundedRectangle(cornerRadius: 16))
-                }
+            actions
+                .padding(.horizontal, 32)
+                .padding(.bottom, 40)
+        }
+        .background(background)
+    }
 
-                Button {
-                    dismiss()
-                    onHome()
-                } label: {
-                    Text("Home")
+    private var background: some View {
+        LinearGradient(
+            colors: [mode.color.opacity(0.18), Color(.systemBackground)],
+            startPoint: .top,
+            endPoint: .center
+        )
+        .ignoresSafeArea()
+    }
+
+    private var gameBadge: some View {
+        Label(mode.title, systemImage: mode.systemImage)
+            .font(.headline.bold())
+            .foregroundStyle(.white)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 8)
+            .background(mode.color, in: Capsule())
+    }
+
+    private var scoreCard: some View {
+        VStack(spacing: 6) {
+            Text("YOUR SCORE")
+                .font(.subheadline.bold())
+                .foregroundStyle(.secondary)
+            Text("\(score)")
+                .font(.system(size: 84, weight: .heavy, design: .rounded))
+                .foregroundStyle(mode.color)
+                .contentTransition(.numericText())
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 28)
+        .background(mode.color.opacity(0.12), in: RoundedRectangle(cornerRadius: 28))
+        .overlay(
+            RoundedRectangle(cornerRadius: 28)
+                .stroke(mode.color.opacity(0.3), lineWidth: 1)
+        )
+        .padding(.horizontal, 32)
+    }
+
+    @ViewBuilder
+    private var bestLabel: some View {
+        if isNewBest {
+            Label("New Best!", systemImage: "trophy.fill")
+                .font(.headline.bold())
+                .foregroundStyle(.white)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(.yellow, in: Capsule())
+                .symbolEffect(.bounce, value: isNewBest)
+        } else {
+            Text("Best: \(best)")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var actions: some View {
+        VStack(spacing: 12) {
+            Button {
+                dismiss()
+                onPlayAgain()
+            } label: {
+                Text("Try Again")
+                    .font(.title2.bold())
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(mode.color, in: RoundedRectangle(cornerRadius: 16))
+            }
+
+            if !shareMessage.isEmpty {
+                ShareLink(item: shareMessage) {
+                    Label("Share Score", systemImage: "square.and.arrow.up")
                         .font(.title2.bold())
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(mode.color)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(.blue.opacity(0.15), in: RoundedRectangle(cornerRadius: 16))
+                        .background(mode.color.opacity(0.15), in: RoundedRectangle(cornerRadius: 16))
                 }
             }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 40)
+
+            Button {
+                dismiss()
+                onHome()
+            } label: {
+                Text("Home")
+                    .font(.title2.bold())
+                    .foregroundStyle(mode.color)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(mode.color.opacity(0.15), in: RoundedRectangle(cornerRadius: 16))
+            }
         }
     }
 }
 
 #Preview("Results") {
-    GameResultsView(score: 42, best: 40, isNewBest: true) {} onHome: {}
+    GameResultsView(mode: .tapFrenzy, score: 42, best: 40, isNewBest: true,
+                    shareMessage: "I just scored 42 on Tap Frenzy — beat that") {} onHome: {}
 }

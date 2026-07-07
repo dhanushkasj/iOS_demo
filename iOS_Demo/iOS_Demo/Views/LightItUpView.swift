@@ -54,7 +54,8 @@ struct LightItUpView: View {
             sessions.record(mode: .lightItUp, score: game.score, coordinate: location.lastCoordinate)
         }
         .fullScreenCover(isPresented: $game.showResults) {
-            GameResultsView(score: game.score, best: highScore, isNewBest: isNewBest) {
+            GameResultsView(mode: .lightItUp, score: game.score, best: highScore, isNewBest: isNewBest,
+                            shareMessage: "I just scored \(game.score) on Light It Up — beat that") {
                 game.reset()
             } onHome: {
                 game.stop()

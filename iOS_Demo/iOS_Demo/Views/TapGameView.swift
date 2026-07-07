@@ -57,7 +57,8 @@ struct TapGameView: View {
             sessions.record(mode: .tapFrenzy, score: game.tappedCount, coordinate: location.lastCoordinate)
         }
         .fullScreenCover(isPresented: $game.showResults) {
-            GameResultsView(score: game.tappedCount, best: highScore, isNewBest: isNewBest) {
+            GameResultsView(mode: .tapFrenzy, score: game.tappedCount, best: highScore, isNewBest: isNewBest,
+                            shareMessage: "I just scored \(game.tappedCount) on Tap Frenzy — beat that") {
                 game.reset()
             } onHome: {
                 dismiss()
