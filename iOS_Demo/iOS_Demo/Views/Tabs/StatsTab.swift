@@ -8,9 +8,11 @@ import SwiftUI
 
 struct StatsTab: View {
     @Environment(SessionStore.self) private var store
+    @State private var filter: GameMode?
 
     var body: some View {
         let stats = StatsViewModel(sessions: store.sessions)
+        let shown = StatsViewModel(sessions: filtered(store.sessions))
 
         NavigationStack {
             Group {
@@ -18,9 +20,14 @@ struct StatsTab: View {
                     ScrollView {
                         VStack(spacing: 20) {
                             totals(stats)
-                            chart(stats)
                             bests(stats)
-                            recent(stats)
+                            filterChips
+                            if shown.hasData {
+                                chart(shown)
+                                recent(shown)
+                            } else {
+                                emptyFilterCard
+                            }
                         }
                         .padding()
                     }
@@ -34,6 +41,11 @@ struct StatsTab: View {
             }
             .navigationTitle("Stats")
         }
+    }
+
+    private func filtered(_ all: [GameSession]) -> [GameSession] {
+        guard let filter else { return all }
+        return all.filter { $0.mode == filter }
     }
 
     private func totals(_ stats: StatsViewModel) -> some View {
@@ -57,6 +69,35 @@ struct StatsTab: View {
         .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 20))
     }
 
+    private var filterChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                chip(title: "All", color: .gray, isSelected: filter == nil) {
+                    filter = nil
+                }
+                ForEach(GameMode.allCases) { mode in
+                    chip(title: mode.title, color: mode.color, isSelected: filter == mode) {
+                        filter = mode
+                    }
+                }
+            }
+            .padding(.horizontal, 2)
+        }
+    }
+
+    private func chip(title: String, color: Color, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline.bold())
+                .foregroundStyle(isSelected ? .white : color)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(isSelected ? color : color.opacity(0.15), in: Capsule())
+        }
+        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
+    }
+
     private func chart(_ stats: StatsViewModel) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Score History")
@@ -70,6 +111,7 @@ struct StatsTab: View {
                 .foregroundStyle(by: .value("Game", session.mode.title))
             }
             .chartForegroundStyleScale(colorScale)
+            .chartLegend(filter == nil ? .visible : .hidden)
             .chartXAxis(.hidden)
             .frame(height: 220)
         }
@@ -150,6 +192,21 @@ struct StatsTab: View {
             }
         }
         .padding()
+        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 20))
+    }
+
+    private var emptyFilterCard: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "gamecontroller")
+                .font(.title)
+                .foregroundStyle(.secondary)
+            Text("No games recorded for \(filter?.title ?? "this filter") yet.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
         .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 20))
     }
 }
