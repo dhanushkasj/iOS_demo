@@ -12,16 +12,42 @@ struct QuizRushView: View {
     @AppStorage("highScore.quizRush") private var highScore = 0
     @AppStorage("settings.hapticsEnabled") private var hapticsEnabled = true
     @State private var isNewBest = false
+    @State private var showQuitConfirm = false
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
     @Environment(LocationService.self) private var location
 
     private let accent: Color = .purple
 
+    private var isPlaying: Bool {
+        if case .loaded = viewModel.state { return !viewModel.showResults }
+        return false
+    }
+
     var body: some View {
         content
             .navigationTitle("Quiz Rush")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(isPlaying)
+            .toolbar {
+                if isPlaying {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            showQuitConfirm = true
+                        } label: {
+                            Image(systemName: "chevron.backward")
+                        }
+                    }
+                }
+            }
+            .confirmationDialog("Quit game?", isPresented: $showQuitConfirm, titleVisibility: .visible) {
+                Button("Quit Game", role: .destructive) {
+                    dismiss()
+                }
+                Button("Keep Playing", role: .cancel) {}
+            } message: {
+                Text("Your current score will be lost.")
+            }
             .task {
                 if viewModel.items.isEmpty { await viewModel.load() }
             }

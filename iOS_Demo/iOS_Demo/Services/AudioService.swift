@@ -10,7 +10,7 @@ final class AudioService {
     private var player: AVAudioPlayer?
 
     init() {
-        try? AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
+        try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
     }
 
     func play() {
@@ -18,6 +18,7 @@ final class AudioService {
             guard let url = Self.trackURL() else { return }
             player = try? AVAudioPlayer(contentsOf: url)
             player?.numberOfLoops = -1
+            player?.volume = 0.4
             player?.prepareToPlay()
         }
         try? AVAudioSession.sharedInstance().setActive(true)

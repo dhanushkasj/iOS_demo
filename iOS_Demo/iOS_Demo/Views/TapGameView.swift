@@ -13,6 +13,7 @@ struct TapGameView: View {
     @State private var isNewBest = false
     @State private var tapTick = 0
     @State private var bump = false
+    @State private var showQuitConfirm = false
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var sessions
     @Environment(LocationService.self) private var location
@@ -37,13 +38,37 @@ struct TapGameView: View {
         }
         .navigationTitle("Tap Frenzy")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(game.isRunning)
+        .toolbar {
+            if game.isRunning {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showQuitConfirm = true
+                    } label: {
+                        Image(systemName: "chevron.backward")
+                    }
+                }
+            }
+        }
+        .confirmationDialog("Quit game?", isPresented: $showQuitConfirm, titleVisibility: .visible) {
+            Button("Quit Game", role: .destructive) {
+                game.reset()
+                dismiss()
+            }
+            Button("Keep Playing", role: .cancel) {}
+        } message: {
+            Text("Your current score will be lost.")
+        }
         .overlay {
             if !game.isRunning && !game.showResults {
                 startOverlay
             }
         }
         .onAppear { if musicEnabled { audio.play() } }
-        .onDisappear { audio.stop() }
+        .onDisappear {
+            audio.stop()
+            game.reset()
+        }
         .sensoryFeedback(trigger: tapTick) { _, _ in
             hapticsEnabled ? .impact : nil
         }
