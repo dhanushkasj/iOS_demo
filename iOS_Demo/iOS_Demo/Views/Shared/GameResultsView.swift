@@ -18,6 +18,7 @@ struct GameResultsView: View {
     let onHome: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @State private var celebrate = false
 
     var body: some View {
         VStack(spacing: 22) {
@@ -39,6 +40,17 @@ struct GameResultsView: View {
                 .padding(.bottom, 40)
         }
         .background(background)
+        .overlay {
+            if isNewBest && celebrate {
+                ConfettiView()
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+            }
+        }
+        .onAppear {
+            guard isNewBest else { return }
+            withAnimation(.easeOut(duration: 0.3)) { celebrate = true }
+        }
     }
 
     private var background: some View {

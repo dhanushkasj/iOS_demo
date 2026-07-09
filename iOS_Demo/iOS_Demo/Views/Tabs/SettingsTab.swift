@@ -65,6 +65,9 @@ struct SettingsTab: View {
                                 titleVisibility: .visible) {
                 Button("Delete Everything", role: .destructive) {
                     store.deleteAll()
+                    for mode in GameMode.allCases {
+                        UserDefaults.standard.removeObject(forKey: mode.highScoreKey)
+                    }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
