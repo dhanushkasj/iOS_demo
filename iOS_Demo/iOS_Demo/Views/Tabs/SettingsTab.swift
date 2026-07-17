@@ -55,6 +55,7 @@ struct SettingsTab: View {
                 }
             }
             .navigationTitle("Settings")
+            .appBackground()
             .onChange(of: dailyEnabled) { _, enabled in
                 Task { await applyReminder(enabled: enabled) }
             }

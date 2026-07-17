@@ -38,8 +38,10 @@ struct HomeTab: View {
                 Spacer()
             }
             .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle("Home")
             .navigationBarTitleDisplayMode(.inline)
+            .appBackground()
         }
     }
 

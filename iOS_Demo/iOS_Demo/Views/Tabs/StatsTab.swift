@@ -39,7 +39,9 @@ struct StatsTab: View {
                     )
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle("Stats")
+            .appBackground()
         }
     }
 

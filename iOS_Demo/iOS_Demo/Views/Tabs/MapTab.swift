@@ -24,6 +24,8 @@ struct MapTab: View {
                         systemImage: "mappin.slash",
                         description: Text("Finish a game with location access on and it'll drop a pin where you played.")
                     )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .appBackground()
                 } else {
                     map
                 }
